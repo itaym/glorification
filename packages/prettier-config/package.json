@@ -1,0 +1,30 @@
+{
+    "description": "Glorification Prettier config: 4 spaces, single quotes, 120 columns, trailing commas.",
+    "exports": {
+        ".": "./index.js"
+    },
+    "files": [
+        "index.js",
+        "README.md"
+    ],
+    "keywords": [
+        "glorification",
+        "prettier",
+        "prettier-config"
+    ],
+    "license": "MIT",
+    "name": "@glorification/prettier-config",
+    "peerDependencies": {
+        "prettier": "^3.0.0"
+    },
+    "publishConfig": {
+        "access": "public"
+    },
+    "repository": {
+        "directory": "packages/prettier-config",
+        "type": "git",
+        "url": "git+https://github.com/itaym/glorification.git"
+    },
+    "type": "module",
+    "version": "0.1.0"
+}

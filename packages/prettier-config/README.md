@@ -2,6 +2,9 @@
 
 ![npm version](https://img.shields.io/npm/v/@glorification/prettier-config?logo=npm&logoColor=white) ![License](https://img.shields.io/npm/l/@glorification/prettier-config?logo=open-source-initiative)
 
+**→ Also: [@glorification/eslint-config](https://www.npmjs.com/package/@glorification/eslint-config)** — the ESLint
+package, with the full modern coding style and before/after examples for every rule.
+
 ```bash
 npm i -D prettier @glorification/prettier-config
 ```

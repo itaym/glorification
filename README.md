@@ -2,6 +2,9 @@
 
 ![License](https://img.shields.io/npm/l/@glorification/eslint-config?logo=open-source-initiative)
 
+**→ Also: [@glorification/prettier-config](https://www.npmjs.com/package/@glorification/prettier-config)** — the
+matching Prettier config.
+
 **A modern coding style for modern JavaScript and TypeScript** — shipped as a ready-made ESLint flat config
 and a matching Prettier config.
 
@@ -32,7 +35,7 @@ people who want to go all the way: sorting, import aliases, JSDoc, and a set of 
 - [Editor setup](#editor-setup)
 - [Why a modern coding style needs a linter](#why-a-modern-coding-style-needs-a-linter)
 - [Requirements](#requirements)
-- [Contributing & releases](#contributing--releases)
+- [Contributing](#contributing)
 
 ---
 
@@ -970,30 +973,12 @@ so reviews talk about what the code does, not how it looks.
 
 ---
 
-## Contributing & releases
-
-This is an npm workspaces monorepo:
-
-```
-packages/
-  eslint-config/     @glorification/eslint-config
-  prettier-config/   @glorification/prettier-config
-docs/                GitHub Pages
-```
+## Contributing
 
 ```bash
 npm install
 npm run lint
 ```
-
-Versions are managed with [Changesets](https://github.com/changesets/changesets):
-
-```bash
-npx changeset          # describe your change
-```
-
-Merging to `main` opens a release PR; merging that publishes to npm with provenance.
-A rule that flags more code is a **major** version.
 
 ---
 

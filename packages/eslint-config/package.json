@@ -23,6 +23,7 @@
         "*.js",
         "README.md"
     ],
+    "homepage": "https://itaym.github.io/glorification/",
     "keywords": [
         "eslint",
         "eslint-config",
@@ -61,5 +62,5 @@
         "prepack": "node -e \"require('fs').copyFileSync('../../README.md', 'README.md')\""
     },
     "type": "module",
-    "version": "0.1.1"
+    "version": "0.1.2"
 }

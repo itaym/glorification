@@ -16,6 +16,9 @@ It is built on the three most widely used rule sets — **Airbnb**, **StandardJS
 merged, de-duplicated, and bent into one modern coding style. On top of it sit **optional extras** for the
 people who want to go all the way: sorting, import aliases, JSDoc, and a set of hand-applied habits.
 
+> **Don't like a rule? Turn it off in one line.** Want more rules? Add them the same way.
+> → [Make it yours: add or turn off rules](#make-it-yours-add-or-turn-off-rules)
+
 - [The packages](#the-packages)
 - [Quick start](#quick-start)
 - [The modern coding style, by example](#the-modern-coding-style-by-example)
@@ -30,7 +33,7 @@ people who want to go all the way: sorting, import aliases, JSDoc, and a set of 
   - [Aliases](#aliases)
   - [JSDoc](#jsdoc)
   - [Hand-applied extras](#hand-applied-extras)
-- [Turning a rule off](#turning-a-rule-off)
+- [Make it yours: add or turn off rules](#make-it-yours-add-or-turn-off-rules)
 - [TypeScript](#typescript)
 - [Editor setup](#editor-setup)
 - [Why a modern coding style needs a linter](#why-a-modern-coding-style-needs-a-linter)
@@ -362,8 +365,7 @@ const summarize = (items) => {
     const sum = item.price * item.count;            // no-shadow: hides the outer `sum`
     items.last = item;                              // no-param-reassign: changes the caller's array
   }
-  const label = sum > 100 ? "big" : sum > 10 ? "medium" : "small"; // no-nested-ternary
-  if (sum > 0) return { label, sum };               // consistent-return: a value here...
+  if (sum > 0) return { label: sum > 100 ? "big" : "small", sum }; // consistent-return: a value here...
 };                                                  // ...and nothing at the end
 ```
 
@@ -373,18 +375,12 @@ const loadConfig = () => ({ debug: false })
 
 const ready = loadConfig()
 
-const sizeOf = sum => {
-    if (sum > 100) return 'big'
-    if (sum > 10) return 'medium'
-    return 'small'
-}
-
 const summarize = items => {
     let sum = 0
     for (const item of items) {
         sum += item.price * item.count
     }
-    return { label: sizeOf(sum), sum }
+    return { label: sum > 100 ? 'big' : 'small', sum }
 }
 ```
 
@@ -393,14 +389,14 @@ const summarize = items => {
 | `consistent-return` | a function returns a value on every path or on none |
 | `default-case` | every `switch` has a `default` |
 | `import-x/no-cycle` | no circular imports |
-| `no-nested-ternary` | one ternary at a time |
 | `no-param-reassign` | parameters are read-only (disable locally when it's deliberate) |
 | `no-shadow` | an inner name never hides an outer one |
 | `no-use-before-define` | only where it matters: code that runs at module load |
 | `prefer-destructuring` | `const { base } = config` |
 
 And some things a modern coding style simply allows: `i++`, bitwise operators, `a = b = c()`, object spread,
-string concatenation, `_private` helpers.
+string concatenation, `_private` helpers, nested ternaries, `for…in`, `(a, b)` sequences and `() => (count = 0)`.
+Want any of them reported? [Add the rule](#want-it-stricter-consider-adding).
 
 ### Semicolons
 
@@ -869,13 +865,53 @@ return { additionSum: results.additionSum, steps: results.steps };
 return { additionSum: results.additionSum, steps: results.steps }
 ```
 
----
-
-## Turning a rule off
-
-Every rule can be switched off like in any flat config:
+#### Every object typedef has a factory
 
 ```js
+// ✗ before
+/** @type {User} */
+const admin = { id: 1, name: "Ada", roles: ["admin"] };
+/** @type {User} */
+const guest = { id: 2, name: "Guest" }; // forgot `roles`, and nothing tells you
+```
+
+```js
+// ✓ hand-applied
+/**
+ * A new {@link User}.
+ *
+ * @param {Partial<User>} [overrides]
+ * @returns {User}
+ */
+const createUser = (overrides = {}) => ({
+    id: 0,
+    name: '',
+    roles: [],
+    ...overrides,
+})
+
+const admin = createUser({ id: 1, name: 'Ada', roles: ['admin'] })
+const guest = createUser({ id: 2, name: 'Guest' })
+```
+
+Every `@typedef {Object}` gets one factory, and every place that creates that object calls it. The factory takes
+an overrides object, spread **after** the defaults. When the typedef changes, you change one place, and a
+hand-built object can't quietly miss a field. The spread has a cost: in a hot path, copy the fields by name instead.
+
+---
+
+## Make it yours: add or turn off rules
+
+The modern coding style is a starting point, not a cage. Your `eslint.config.js` is a normal flat config, so you
+can turn off any rule you find annoying and add any rule you miss.
+
+> **One rule to remember:** put your changes **after** `...glorification` and after any extras. For each rule,
+> the last setting wins.
+
+### Turn a rule off everywhere
+
+```js
+// eslint.config.js
 import glorification from '@glorification/eslint-config'
 
 export default [
@@ -887,6 +923,87 @@ export default [
     },
 ]
 ```
+
+### Turn a rule off for some files
+
+```js
+export default [
+    ...glorification,
+    {
+        files: ['**/*.test.js', 'scripts/**'],
+        rules: {
+            'no-console': 'off',
+        },
+    },
+]
+```
+
+### Turn a rule off for one line or one block
+
+```js
+// eslint-disable-next-line no-console
+console.log(report)
+
+/* eslint-disable no-console */
+console.log(header)
+console.log(rows)
+/* eslint-enable no-console */
+```
+
+A block needs `/* … */` comments: a `// eslint-disable` line comment does nothing.
+
+### Change a rule's options
+
+```js
+{
+    rules: {
+        'no-console': ['warn', { allow: ['error', 'warn'] }],
+    },
+},
+```
+
+### Add a rule
+
+Every core ESLint rule, and every rule of the plugins Glorification already brings (`@stylistic`, `import-x`, `n`,
+`promise`, `unicorn`, `prefer-arrow-functions`), can be added by name. There's nothing to install:
+
+```js
+{
+    rules: {
+        'no-sequences': 'error',
+        'unicorn/prefer-at': 'error',
+    },
+},
+```
+
+A rule from another plugin: install the plugin, register it under `plugins`, then use its rules.
+
+```js
+import glorification from '@glorification/eslint-config'
+import regexp from 'eslint-plugin-regexp'
+
+export default [
+    ...glorification,
+    {
+        plugins: { regexp },
+        rules: {
+            'regexp/no-super-linear-backtracking': 'error',
+        },
+    },
+]
+```
+
+### Want it stricter? Consider adding
+
+These rules are off in the modern coding style on purpose, but they're good rules. Add any of them by name:
+
+| Rule | What it reports | Why it's off |
+|---|---|---|
+| `no-sequences` | the comma operator; catches typos like `if (a, b)` | `(a, b)` is sometimes used on purpose |
+| `no-nested-ternary` | `a ? x : b ? y : z` | a well-formatted chain reads fine |
+| `guard-for-in` | `for…in` without an own-property check | modern code uses `Object.keys` / `Object.entries` |
+| `no-return-assign` | `return a = b`, often a typo for `===` | `() => (count = 0)` is a common, clear pattern |
+| `no-console: 'error'` | any `console.*` call | it's a warning, so debugging stays easy |
 
 ---
 

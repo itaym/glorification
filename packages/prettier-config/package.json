@@ -7,6 +7,7 @@
         "index.js",
         "README.md"
     ],
+    "homepage": "https://itaym.github.io/glorification/",
     "keywords": [
         "glorification",
         "prettier",
@@ -26,5 +27,5 @@
         "url": "git+https://github.com/itaym/glorification.git"
     },
     "type": "module",
-    "version": "0.1.1"
+    "version": "0.1.2"
 }

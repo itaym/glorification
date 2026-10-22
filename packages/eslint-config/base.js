@@ -1,6 +1,6 @@
 import js from '@eslint/js'
 import stylistic from '@stylistic/eslint-plugin'
-import importXPlugin from 'eslint-plugin-import-x'
+import importXPlugin, { createNodeResolver } from 'eslint-plugin-import-x'
 import n from 'eslint-plugin-n'
 import preferArrow from 'eslint-plugin-prefer-arrow-functions'
 import promise from 'eslint-plugin-promise'
@@ -25,6 +25,10 @@ const base = [
             'prefer-arrow-functions': preferArrow,
             promise,
             unicorn,
+        },
+        // without it import-x falls back to the uninstalled legacy resolver and crashes (e.g. on `import 'vite'`)
+        settings: {
+            'import-x/resolver-next': [createNodeResolver()],
         },
         rules: {
             '@stylistic/array-bracket-spacing': ['error', 'never'],
